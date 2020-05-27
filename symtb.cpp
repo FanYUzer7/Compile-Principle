@@ -40,7 +40,7 @@ SYMENTRY insertEntry(char name[]){
 SYMENTRY searchByName(char name[]){
     SYMENTRY entry = NULL;
     int depth = blocknumber;
-    printf("depth = %d\n",blocknumber);
+    //printf("depth = %d\n",blocknumber);
     while(entry==NULL&&depth>=0){
         entry = searchByDepth(name,depth);
         if(depth>0) depth = contblock[depth];

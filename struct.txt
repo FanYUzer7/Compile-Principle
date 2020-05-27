@@ -1,0 +1,17 @@
+program_head
+const_part(2)
+type_part(2)
+name_list(2)
+simple_type_decl(1)
+type_decl(1)
+var_decl
+var_decl_list(2)
+var_part(1)
+name_list(2)
+val_para_list
+simple_type_decl(1)
+para_type_list(2)
+para_decl_list(2)
+parameters(1)
+simple_type_decl(1)
+function_head

@@ -38,7 +38,6 @@ SYMENTRY insertEntry(char name[]){
 }
 
 SYMENTRY searchByName(char name[]){
-    printf("searchByName\n");
     SYMENTRY entry = NULL;
     int depth = blocknumber;
     printf("depth = %d\n",blocknumber);
@@ -53,9 +52,7 @@ SYMENTRY searchByName(char name[]){
 }
 
 SYMENTRY searchByDepth(char name[],int depth){
-    printf("searchByDepth\n");
     int pos = hash(name);
-    printf("after hash\n");
     SYMENTRY entry;
     while((entry=symtab[depth][pos])!=NULL){
         if(strcmp(name,entry->name)==0) return entry;

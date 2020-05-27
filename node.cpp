@@ -191,9 +191,9 @@ NBlockDecl::NBlockDecl(int type) : type(type) {}
 NFuncDecl::NFuncDecl(NFuncHead *funcHead, NRoutine *subRoutine) :funcHead(funcHead), subRoutine(subRoutine), NBlockDecl(0) { }
 
 NFuncHead::NFuncHead(std::string NAME, NParams *params, NSimpleType *simpleType) : NAME(NAME), params(params), simpleType(simpleType) {
-	printf("NFuncHead\n");
+	//printf("NFuncHead\n");
 	SYMENTRY res = symAlloc();
-	if(res == nullptr) printf("res is nullptr\n");
+	//if(res == nullptr) printf("res is nullptr\n");
 	if(simpleType != nullptr && simpleType->type==0){
 		switch (simpleType->Sys_type)
 		{
@@ -218,14 +218,15 @@ NFuncHead::NFuncHead(std::string NAME, NParams *params, NSimpleType *simpleType)
 	
 	SYMENTRY head = nullptr;
 	SYMENTRY tail = nullptr;
+	//if(params->paramsDeclList==nullptr) printf("params->paramsDeclList is nullptr\n");
 	for(NParamsTypeList * paramsTypeList:params->paramsDeclList->paramsTypes){
-		if(paramsTypeList == nullptr) printf("paramsTypeList is nullptr\n");
+		//if(paramsTypeList == nullptr) printf("paramsTypeList is nullptr\n");
 		if(paramsTypeList->type == 0){ //var_par_list
-			if(paramsTypeList->varParamsList==nullptr) printf("paramsTypeList->varParamsList is nullptr\n");
-			if(paramsTypeList->varParamsList->nameList==nullptr) printf("nameList is nullptr\n");
+			//if(paramsTypeList->varParamsList==nullptr) printf("paramsTypeList->varParamsList is nullptr\n");
+			//if(paramsTypeList->varParamsList->nameList==nullptr) printf("nameList is nullptr\n");
 			for(std::string& name:paramsTypeList->varParamsList->nameList->IDs){
-				SYMENTRY sym = createByName((char*)name.c_str());
-				if(sym==nullptr) printf("sym_var is nullptr\n");
+				SYMENTRY sym = insertEntry((char*)name.c_str());
+				//if(sym==nullptr) printf("sym_var is nullptr\n");
 				sym->type = SYM_VAR;
 				if(paramsTypeList->simpleType != nullptr && paramsTypeList->simpleType->type==0){
 					switch (paramsTypeList->simpleType->Sys_type)
@@ -256,9 +257,11 @@ NFuncHead::NFuncHead(std::string NAME, NParams *params, NSimpleType *simpleType)
 			}
 		}
 		else if(paramsTypeList->type == 1){ //val_par_list
-			for(std::string& name:paramsTypeList->varParamsList->nameList->IDs){
-				SYMENTRY sym = createByName((char*)name.c_str());
-				if(sym==nullptr) printf("sym_val is nullptr\n");
+			//if(paramsTypeList->valParamsList==nullptr) printf("paramsTypeList->varParamsList is nullptr\n");
+			//if(paramsTypeList->valParamsList->nameList==nullptr) printf("nameList is nullptr\n");
+			for(std::string& name:paramsTypeList->valParamsList->nameList->IDs){
+				SYMENTRY sym = insertEntry((char*)name.c_str());
+				//if(sym==nullptr) printf("sym_val is nullptr\n");
 				sym->type = SYM_ARGMENT;
 				if(paramsTypeList->simpleType != nullptr && paramsTypeList->simpleType->type==0){
 					switch (paramsTypeList->simpleType->Sys_type)
@@ -290,7 +293,7 @@ NFuncHead::NFuncHead(std::string NAME, NParams *params, NSimpleType *simpleType)
 		}
 	}
 	insertFuncList((char*)NAME.c_str(),res,head);
-	printf("insert success\n");
+	//printf("insert success\n");
 }
 
 NProcDecl::NProcDecl(NProcHead *procHead, NRoutine *subRoutine) : procHead(procHead), subRoutine(subRoutine), NBlockDecl(1){}
@@ -398,11 +401,11 @@ NTerm::NTerm(){}
 NTerm::NTerm(std::vector<NFactor *> factors, std::vector<int> types): factors(factors), types(types){}
 
 NFactor::NFactor(int type, std::string NAME) : type(type), NAME(NAME) {
-	printf("%s\n",NAME.c_str());
+	//printf("%s\n",NAME.c_str());
 	if(type==0){
-		printf("before search\n");
+		//printf("before search\n");
 		SYMENTRY sym = searchByName((char*)NAME.c_str());
-		printf("after search\n");
+		//printf("after search\n");
 		if(sym == nullptr){
 			printf("sym in Factor(0) is nullptr\n");
 			printf("ERROR: at line %d: %s is not defined!\n",line_cnt,NAME.c_str());
@@ -423,9 +426,11 @@ NFactor::NFactor(int type, std::string NAME, NArgsList *argsList) : type(type), 
 			exit(-1);
 		}
 		int argCont = 0;
-		for(SYMENTRY ptr = sym->dataType->next;ptr != nullptr && ptr->next != nullptr;ptr = ptr->next){
+		for(SYMENTRY ptr = sym->dataType->next;ptr != nullptr;ptr = ptr->next){
 			argCont++;
 		}
+		//printf("argCount = %d\n",argCont);
+		//printf("argList->expression.size() = %d",argsList->expressions.size());
 		if(argCont != argsList->expressions.size()){
 			printf("ERROR: at line %d: %s receives wrong number of arguments!\n",line_cnt,NAME.c_str());
 			exit(-1);

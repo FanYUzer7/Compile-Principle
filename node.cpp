@@ -1,6 +1,6 @@
 #include "node.hpp"
 
-NProgram::NProgram(NProgramHead *head, NRoutine *routine): head(head), routine(routine) {}
+NProgram::NProgram(NProgramHead *head, NRoutine *routine): head(head), routine(routine) { printf("Nprogram\n");}
 
 NProgramHead::NProgramHead(const std::string &id) : id(id) {}
 
@@ -8,6 +8,8 @@ NRoutine::NRoutine(NRoutineHead *head, NRoutineBody *body) : routineHead(head), 
 
 NRoutineHead::NRoutineHead(NConstPart *constPart, NTypePart *typePart, NVarPart *varPart, NRoutinePart *routinePart): constPart(constPart), typePart(typePart), 
                 varPart(varPart), routinePart(routinePart) {}
+
+NConstPart::NConstPart(){}
 
 NConstPart::NConstPart(NConstExpressionList *constExprList): constExprList(constExprList){}
 
@@ -49,6 +51,8 @@ NConstValue::NConstValue(int type, int Integer) : type(type) {
 NConstValue::NConstValue(int type, double Real) : type(type), Real(Real) { }
 
 NConstValue::NConstValue(int type, char Char) : type(type), Char(Char) { }
+
+NTypePart::NTypePart(){}
 
 NTypePart::NTypePart(NTypeDefList *typeDefList): typeDefList(typeDefList){}
 
@@ -95,6 +99,8 @@ NArrayType::NArrayType(NSimpleType *simpleType, NTypeDecl *typeDecl) : simpleTyp
 NRecordType::NRecordType(NFieldDeclList *fieldDeclList) : fieldDeclList(fieldDeclList) {}
 
 NFieldDecl::NFieldDecl(NNameList *nameList, NTypeDecl *typeDecl) : nameList(nameList), typeDecl(typeDecl) {}
+
+NVarPart::NVarPart() {}
 
 NVarPart::NVarPart(NVarDeclList *varDeclList) : varDeclList(varDeclList) {}
 
@@ -185,6 +191,8 @@ NVarDecl::NVarDecl(NNameList *nameList, NTypeDecl *typeDecl) : nameList(nameList
 		}
 	}
 }
+
+NRoutinePart::NRoutinePart(){}
 
 NBlockDecl::NBlockDecl(int type) : type(type) {}
 
@@ -300,6 +308,8 @@ NProcDecl::NProcDecl(NProcHead *procHead, NRoutine *subRoutine) : procHead(procH
 
 NProcHead::NProcHead(std::string NAME, NParams *params) : NAME(NAME), params(params) {}
 
+NParams::NParams(){}
+
 NParams::NParams(NParamsDeclList *paramsDeclList) : paramsDeclList(paramsDeclList) {}
 
 NParamsTypeList::NParamsTypeList(int type, NVarParamsList *varParamsList, NSimpleType *simpleType) : type(type), varParamsList(varParamsList), simpleType(simpleType) {}
@@ -369,6 +379,8 @@ NProcStmt::NProcStmt(int type, int Sys_proc, NExprList *exprList) : type(type), 
 NProcStmt::NProcStmt(int type, NFactor *factor) : type(type), factor(factor) {}
 
 NIfStmt::NIfStmt(NExpression *expression, NStmt *stmt, NElseStmt *elseStmt) : expression(expression), stmt(stmt), elseStmt(elseStmt) {}
+
+NElseStmt::NElseStmt(){}
 
 NElseStmt::NElseStmt(NStmt *stmt) : stmt(stmt) {}
 

@@ -106,6 +106,7 @@ class NConstPart
 {
 public:
     NConstExpressionList *constExprList = nullptr;
+    NConstPart();
     NConstPart(NConstExpressionList *constExprList);
     llvm::Value* codeGen(CodeGenContext *context);
 };
@@ -147,6 +148,7 @@ class NTypePart
 public:
     NTypeDefList *typeDefList = nullptr;
 
+    NTypePart();
     NTypePart(NTypeDefList *typeDefList);
     llvm::Value* codeGen(CodeGenContext *context);
 };
@@ -250,6 +252,7 @@ class NVarPart
 public:
     NVarDeclList *varDeclList = nullptr;
 
+    NVarPart();
     NVarPart(NVarDeclList *varDeclList);
     llvm::Value* codeGen(CodeGenContext *context);
 };
@@ -277,6 +280,7 @@ class NRoutinePart
 public:
     std::vector<NBlockDecl *> blockDecls;
 
+    NRoutinePart();
     llvm::Value* codeGen(CodeGenContext *context);
 };
 
@@ -337,6 +341,7 @@ class NParams
 public:
     NParamsDeclList *paramsDeclList = nullptr;
 
+    NParams();
     NParams(NParamsDeclList *paramsDeclList);
     llvm::Value* codeGen(CodeGenContext *context);
 };
@@ -498,6 +503,7 @@ class NElseStmt
 public:
     NStmt *stmt = nullptr;
 
+    NElseStmt();
     NElseStmt(NStmt *stmt);
     llvm::Value* codeGen(CodeGenContext *context);
 };

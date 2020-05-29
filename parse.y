@@ -152,7 +152,7 @@ sub_routine : routine_head  routine_body{if(DEBUG) treeNode << "sub_routine" << 
 routine_head : const_part  type_part  var_part  routine_part{if(DEBUG) treeNode << "routine_head" << std::endl; $$ = new NRoutineHead($1,$2,$3,$4); };
 
 const_part : CONST  const_expr_list{if(DEBUG) treeNode << "const_part(1)" << std::endl; $$ = new NConstPart($2);}
-            |{if(DEBUG) treeNode << "const_part(2)" << std::endl;};
+            |{if(DEBUG) treeNode << "const_part(2)" << std::endl; $$ = new NConstPart();};
 
 const_expr_list :const_expr_list  ID  EQUAL  const_value  SEMI{if(DEBUG) treeNode << "const_expr_list(1)" << std::endl; $1->constList.push_back(new NConst(*$2, $4)); }
                 |  ID  EQUAL  const_value  SEMI{if(DEBUG) treeNode << "const_expr_list(2)" << std::endl; $$ = new NConstExpressionList();  $$->constList.push_back(new NConst(*$1, $3)); };
@@ -163,7 +163,7 @@ const_value :INTEGER{if(DEBUG) treeNode << "const_value(1)" << std::endl; $$ = n
           |  SYS_CON{if(DEBUG) treeNode << "const_value(4)" << std::endl; $$ = new NConstValue(3, (*$1=="false")?0:(*$1=="maxint")?1:2); };
 
 type_part :TYPE type_decl_list {if(DEBUG) treeNode << "type_part(1)" << std::endl; $$ = new NTypePart($2); }
-            |{if(DEBUG) treeNode << "type_part(2)" << std::endl;};
+            |{if(DEBUG) treeNode << "type_part(2)" << std::endl; $$ = new NTypePart();};
 
 type_decl_list :type_decl_list  type_definition{if(DEBUG) treeNode << "type_decl_list(1)" << std::endl; $1->typeDefList.push_back($2); }
                 |  type_definition{ if(DEBUG) treeNode << "type_decl_list(2)" << std::endl; $$ = new NTypeDefList(); $$->typeDefList.push_back($1); };
@@ -195,7 +195,7 @@ name_list :name_list  COMMA  ID{if(DEBUG) treeNode << "name_list(1)" << std::end
           |  ID{if(DEBUG) treeNode << "name_list(2)" << std::endl; $$ = new NNameList(); $$->IDs.push_back(*$1); };
 
 var_part :VAR  var_decl_list{if(DEBUG) treeNode << "var_part(1)" << std::endl; $$ = new NVarPart($2); }
-            |{if(DEBUG) treeNode << "var_part(2)" << std::endl;};
+            |{if(DEBUG) treeNode << "var_part(2)" << std::endl; $$ = new NVarPart();};
 
 var_decl_list :  var_decl_list  var_decl{if(DEBUG) treeNode << "var_decl_list(1)" << std::endl; $1->varDecls.push_back($2); }
               |  var_decl{if(DEBUG) treeNode << "var_decl_list(2)" << std::endl; $$ = new NVarDeclList();$$->varDecls.push_back($1); };
@@ -206,7 +206,7 @@ routine_part:  routine_part  function_decl{if(DEBUG) treeNode << "routine_part(1
               |  routine_part  procedure_decl{if(DEBUG) treeNode << "routine_part(2)" << std::endl; $1->blockDecls.push_back($2); }
               |  function_decl{if(DEBUG) treeNode << "routine_part(3)" << std::endl; $$ = new NRoutinePart(); $$->blockDecls.push_back($1);}
               |  procedure_decl{if(DEBUG) treeNode << "routine_part(4)" << std::endl; $$ = new NRoutinePart(); $$->blockDecls.push_back($1); }  
-              | {if(DEBUG) treeNode << "routine_part(5)" << std::endl;};
+              | {if(DEBUG) treeNode << "routine_part(5)" << std::endl; $$ = new NRoutinePart();};
 
 function_decl : function_head  SEMI  sub_routine  SEMI{if(DEBUG) treeNode << "function_decl" << std::endl; $$ = new NFuncDecl($1, $3); };
 
@@ -217,7 +217,7 @@ procedure_decl :  procedure_head  SEMI  sub_routine  SEMI{if(DEBUG) treeNode << 
 procedure_head :  PROCEDURE ID parameters{if(DEBUG) treeNode << "procedure_head" << std::endl; $$ = new NProcHead(*$2, $3); };
 
 parameters :LP  para_decl_list  RP  {if(DEBUG) treeNode << "parameters(1)" << std::endl; $$ = new NParams($2); }
-            |  {if(DEBUG) treeNode << "parameters(2)" << std::endl;};
+            |  {if(DEBUG) treeNode << "parameters(2)" << std::endl; $$ = new NParams();};
 
 para_decl_list :para_decl_list  SEMI  para_type_list {if(DEBUG) treeNode << "para_decl_list(1)" << std::endl; $1->paramsTypes.push_back($3); }
                 | para_type_list{if(DEBUG) treeNode << "para_decl_list(2)" << std::endl; $$ = new NParamsDeclList(); $$->paramsTypes.push_back($1); };
@@ -231,7 +231,9 @@ val_para_list   : name_list  {if(DEBUG) treeNode << "val_para_list" << std::endl
 
 routine_body    : compound_stmt  {if(DEBUG) treeNode << "routine_body" << std::endl; $$ = new NRoutineBody($1); };
 
-compound_stmt   : START{blocknumber++; contblock[blocknumber]=lastblock; lastblock=blocknumber;} stmt_list  END  {if(DEBUG) treeNode << "compound_stmt" << std::endl; $$ = new NCompStmt($3); lastblock=contblock[blocknumber]; };
+compound_stmt   : START NULLPART stmt_list  END  {if(DEBUG) treeNode << "compound_stmt" << std::endl; $$ = new NCompStmt($3); lastblock=contblock[blocknumber]; };
+
+NULLPART        : {blocknumber++; contblock[blocknumber]=lastblock; lastblock=blocknumber;}
             
 stmt_list   : stmt_list  stmt  SEMI  {if(DEBUG) treeNode << "stmt_list(1)" << std::endl; $1->stmts.push_back($2); }
             | {if(DEBUG) treeNode << "stmt_list(2)" << std::endl; $$ = new NStmtList(); };
@@ -262,7 +264,7 @@ proc_stmt   : ID  {if(DEBUG) treeNode << "proc_stmt(1)" << std::endl; $$ = new N
 if_stmt : IF  expression  THEN  stmt  else_clause  {if(DEBUG) treeNode << "if_stmt" << std::endl; $$ = new NIfStmt($2, $4, $5); };
 
 else_clause : ELSE  stmt  {if(DEBUG) treeNode << "else_clause(1)" << std::endl; $$ = new NElseStmt($2); }
-            | {if(DEBUG) treeNode << "else_clause(2)" << std::endl;};
+            | {if(DEBUG) treeNode << "else_clause(2)" << std::endl; $$ = new NElseStmt();};
 
 repeat_stmt : REPEAT  stmt_list  UNTIL  expression  {if(DEBUG) treeNode << "repeat_stmt" << std::endl; $$ = new NRepeatStmt($2, $4); };
 

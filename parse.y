@@ -233,7 +233,7 @@ routine_body    : compound_stmt  {if(DEBUG) treeNode << "routine_body" << std::e
 
 compound_stmt   : START NULLPART stmt_list  END  {if(DEBUG) treeNode << "compound_stmt" << std::endl; $$ = new NCompStmt($3); lastblock=contblock[blocknumber]; };
 
-NULLPART        : {blocknumber++; contblock[blocknumber]=lastblock; lastblock=blocknumber;}
+NULLPART        : {blocknumber++; contblock[blocknumber]=lastblock; lastblock=blocknumber;};
             
 stmt_list   : stmt_list  stmt  SEMI  {if(DEBUG) treeNode << "stmt_list(1)" << std::endl; $1->stmts.push_back($2); }
             | {if(DEBUG) treeNode << "stmt_list(2)" << std::endl; $$ = new NStmtList(); };

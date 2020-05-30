@@ -20,6 +20,8 @@
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Attributes.h>
 #include <llvm/IR/ValueSymbolTable.h>
+#include <llvm/Bitstream/BitstreamReader.h> //my
+#include <llvm/Bitstream/BitstreamWriter.h> //my
 #include <llvm/Bitcode/BitcodeReader.h>
 #include <llvm/Bitcode/BitcodeWriter.h>
 #include <llvm/Support/TargetSelect.h>
@@ -36,7 +38,6 @@ class CodeGenContext;
 static llvm::LLVMContext GlobalContext;
 
 llvm::Function* createPrintf(CodeGenContext *context);
-llvm::Value *getArrRef(std::string name, NExpression *expression, CodeGenContext *context);
 
 class CodeGenBlock {
 public:
@@ -158,9 +159,12 @@ public:
 
         this->pushBlock(basBlock);  // 将程序入口（main函数的block）压栈
         this->currentFunction = this->mainFunction;
+        std::cout << "start codeGen" << std::endl;
         root->codeGen(this);
+        std::cout << "start create" << std::endl;
         llvm::ReturnInst::Create(GlobalContext,              // LLVMContext &Context
                                  this->getCurBlock());  // BasicBlock *InsertAtEnd
+        std::cout << "start pop" << std::endl;
         this->popBlock();  // 出栈
 
     	std::cout << "Code is generated.\n";
@@ -205,6 +209,7 @@ public:
         std::cout << "pushing..." << std::endl;
         blocks.push(new CodeGenBlock());
         blocks.top()->block = block;
+        std::cout << "pushing success" << std::endl;
     }
     void popBlock()
     {
@@ -236,6 +241,14 @@ public:
         }
     }
 };
+
+template <typename T> static std::string Print(T* value_or_type) {
+    std::string str;
+    llvm::raw_string_ostream stream(str);
+    value_or_type->print(stream);
+    return str;
+}
+
 
 
 #endif

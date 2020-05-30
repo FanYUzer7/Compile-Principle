@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-
+#include <typeinfo>
 #include "CodeGen.h"
 
 //--------------------------------------------------------------
@@ -39,41 +39,58 @@ llvm::Value *getArrRef(std::string name, NExpression *expression, CodeGenContext
 			context->getCurBlock());                  // BasicBlock *InsertAtEnd
 }
 
-
-// ========================codeGen=====================//
+/* ================== code generate =================== */
 llvm::Value *NProgram::codeGen(CodeGenContext *context)
 {
     this->head->codeGen(context);
+	std::cout << "start return" << std::endl;
     return this->routine->codeGen(context);
 }
 
 llvm::Value *NProgramHead::codeGen(CodeGenContext *context)
-{
+{	
+	std::cout << "head codeGen" << std::endl;
     return nullptr;
 }
 
 llvm::Value *NRoutine::codeGen(CodeGenContext *context)
 {
+	std::cout << "routine codegen" << std::endl;
     this->routineHead->codeGen(context);
     return this->routineBody->codeGen(context);
 }
 
 llvm::Value *NRoutineHead::codeGen(CodeGenContext *context)
 {
+	std::cout << "routine head codegen" << std::endl;
     this->constPart->codeGen(context);
+	std::cout << "type codegen" << std::endl;
     this->typePart->codeGen(context);
+	std::cout << "var codegen" << std::endl;
     this->varPart->codeGen(context);
+	std::cout << "route part codegen" << std::endl;
 	this->routinePart->codeGen(context);
 	return nullptr;
 }
 
 llvm::Value *NConstPart::codeGen(CodeGenContext *context)
 {
+	std::cout << "cost part codegen" << std::endl;
+	if(this->constExprList==nullptr){
+		return nullptr;//my
+	}
     return this->constExprList->codeGen(context);
 }
 
 llvm::Value *NConstExpressionList::codeGen(CodeGenContext *context)
 {
+	std::cout << "cost expression list codegen" << std::endl;
+	std::cout <<"const exp list size: "<< this->constList.size() << std::endl;
+	/*
+	if (this->constList.size() > 1000){
+		this->constList.clear();//my
+	}
+	*/
     for(int i = 0; i < this->constList.size(); i++)
     {
         this->constList[i]->codeGen(context);
@@ -84,6 +101,7 @@ llvm::Value *NConstExpressionList::codeGen(CodeGenContext *context)
 
 llvm::Value *NConst::codeGen(CodeGenContext *context)
 {
+	std::cout << "cost list codegen" << std::endl;
 	llvm::Value *alloc = new llvm::AllocaInst(  // 为常量分配空间
 		context->getLLVMTy(this),   // Type *Ty                 // 类型
 		0,                                        // unsigned AddrSpace
@@ -102,6 +120,7 @@ llvm::Value *NConst::codeGen(CodeGenContext *context)
 
 llvm::Value *NConstValue::codeGen(CodeGenContext *context)
 {
+	std::cout<<"const value type: "<<this->type<<std::endl;
 	switch (this->type)
 	{
 	case 0: return llvm::ConstantInt::get(llvm::Type::getInt32Ty(GlobalContext), this->Integer, true);
@@ -114,11 +133,20 @@ llvm::Value *NConstValue::codeGen(CodeGenContext *context)
 
 llvm::Value *NTypePart::codeGen(CodeGenContext *context)
 {
-	return this->typeDefList->codeGen(context);
+	std::cout << "type codegen" << std::endl;
+	std::cout << typeid(this).name() << std::endl;
+	if (this->typeDefList != nullptr){//my
+		return this->typeDefList->codeGen(context);
+	}
+	else{
+		return nullptr;
+	}
 }
 
 llvm::Value *NTypeDefList::codeGen(CodeGenContext *context)
 {
+	std::cout << "type def list codegen" << std::endl;
+	std::cout <<"type def list size: "<<this->typeDefList.size() << std::endl;
 	for (int i = 0; i < this->typeDefList.size(); i++)
 		this->typeDefList[i]->codeGen(context);
 	return nullptr;
@@ -126,6 +154,7 @@ llvm::Value *NTypeDefList::codeGen(CodeGenContext *context)
 
 llvm::Value *NTypeDefinition::codeGen(CodeGenContext *context)
 {
+	std::cout << "type definition codegen" << std::endl;
 	context->getCurCodeGenBlock()->typedefs[this->NAME] = this->typeDecl;
 	return nullptr;
 }
@@ -170,6 +199,10 @@ llvm::Value *NNameList::codeGen(CodeGenContext *context)
 
 llvm::Value *NVarPart::codeGen(CodeGenContext *context)
 {
+	std::cout << "var part codegen"<< std::endl;
+	if (this->varDeclList==nullptr){//my
+		return nullptr;
+	}
 	return this->varDeclList->codeGen(context);
 }
 
@@ -380,8 +413,11 @@ llvm::Value *NFuncDecl::codeGen(CodeGenContext *context)
 	this->subRoutine->codeGen(context);
 
 	if (this->funcHead->simpleType != nullptr) {
+		llvm::Type *ty;
+		ty = llvm::Type::getInt32PtrTy(GlobalContext);//my
 		std::cout << "|--- Generating return value for function" << std::endl;
-		llvm::Value *load = new llvm::LoadInst(  // 加载返回值的地址
+		llvm::Value *load = new llvm::LoadInst( // 加载返回值的地址
+			ty,//my
 			context->getValue(this->funcHead->NAME),
 			llvm::Twine(""),
 			false,
@@ -454,6 +490,7 @@ llvm::Value *NValParamsList::codeGen(CodeGenContext *context)
 
 llvm::Value *NRoutineBody::codeGen(CodeGenContext *context)
 {
+	std::cout << "route body codegen" << std::endl;
 	return this->compStmt->codeGen(context);
 }
 
@@ -489,16 +526,23 @@ llvm::Value *NNonLabStmt::codeGen(CodeGenContext *context)
 	case 8:this->gotoStmt->codeGen(context); break;
 	default:break;
 	}
+	std::cout<<"nonlabstmt return"<<std::endl;
 	return nullptr;
 }
+
 /*底层*/
 llvm::Value *NAssignStmt::codeGen(CodeGenContext *context)
 {
 	std::cout << "Creating assignment statment..." << std::endl;
+	std::cout <<"assignment type: "<<this->type << std::endl;
 	if (this->type == 0)
 	{
+		llvm::Type *ty;
+		ty = llvm::Type::getInt32PtrTy(GlobalContext); //my
 		llvm::Value *tmp = context->getValue(this->ID1);
+		std::cout<< "tmp type: "<<Print(tmp->getType())<<std::endl;
 		llvm::Value *load;
+		/*my
 		do {
 			load = tmp;
 			tmp = new llvm::LoadInst(
@@ -507,12 +551,24 @@ llvm::Value *NAssignStmt::codeGen(CodeGenContext *context)
 				false,
 				context->getCurBlock());
 		} while (tmp->getType()->isPointerTy());
-
-		return new llvm::StoreInst(
-			this->expression1->codeGen(context),  // 值（右）
+		*/
+		load = tmp;
+		tmp = new llvm::LoadInst(
+			tmp->getType(),
+			tmp,
+			llvm::Twine(""),
+			false,
+			context->getCurBlock());
+		std::cout<<"loadinst"<<std::endl;
+		llvm::Value* exp_val = this->expression1->codeGen(context);
+		std::cout<<"exp val"<<std::endl;
+		llvm::Value* val = new llvm::StoreInst(
+			exp_val,  // 值（右）
 			load,          // 地址（左）
 			false,
 			context->getCurBlock());
+		std::cout<<"assignstmt return"<<std::endl;
+		return val;
 	}
 	else if (this->type == 1)
 	{
@@ -565,8 +621,11 @@ llvm::Value *NProcStmt::codeGen(CodeGenContext *context)
 				if (arg->exprs[0]->terms[0]->factors[0]->type == 0) {  // 如果这个参数是变量
 					llvm::Value *ptr = context->getValue(
 						arg->exprs[0]->terms[0]->factors[0]->NAME);  // 取得变量的值
+					llvm::Type *ty;
+					ty = llvm::Type::getInt32PtrTy(GlobalContext);//my
 					while (ptr->getType() != llvm::Type::getInt32PtrTy(GlobalContext)) {
 						ptr = new llvm::LoadInst(
+							ty,
 							ptr,
 							llvm::Twine(""),
 							false,
@@ -647,7 +706,14 @@ llvm::Value *NProcStmt::codeGen(CodeGenContext *context)
 			else {
 				argValues.push_back(arg->codeGen(context));
 			}
-		}}
+		}
+		ArrayRef< Value* > arguments(argValues); //my
+		return llvm::CallInst::Create(
+			func,
+			arguments,
+			llvm::Twine(""),
+			context->getCurBlock());
+		}
 	case 2:{
 		if (this->Sys_proc == 0 or this->Sys_proc == 1)
 		{
@@ -955,11 +1021,16 @@ llvm::Value *NExprList::codeGen(CodeGenContext *context)
 
 llvm::Value *NExpression::codeGen(CodeGenContext *context)
 {
+	std::cout<<"expression codegen"<<std::endl;
+	std::cout<<"expression expr size: "<<this->exprs.size()<<std::endl;
 	llvm::Value *result = this->exprs[0]->codeGen(context);
-	if (this->exprs.size() == 1)
+	if (this->exprs.size() == 1){
+		std::cout<<"expression early return"<<std::endl;
 		return result;
+	}
 	for (int i = 0; i < this->types.size(); i++)
 	{
+		std::cout<<"expression i "<<i<<" type "<<this->types[i]<<std::endl;
 		switch (this->types[i])
 		{
 		case 0:{
@@ -1017,22 +1088,31 @@ llvm::Value *NExpression::codeGen(CodeGenContext *context)
 			break;
 		}
 	}
+	std::cout<<"expression return"<<std::endl;
 	return result;
 }
 
 llvm::Value *NExpr::codeGen(CodeGenContext *context)
 {
+	std::cout<<"expr codegen"<<std::endl;
+	std::cout<<"expr term size "<<this->terms.size()<<std::endl;
 	llvm::Value * result = this->terms[0]->codeGen(context);
-	if (this->terms.size() == 1)
+	std::cout<<"expr result"<<std::endl;
+	if (this->terms.size() == 1){
+		std::cout<<"expr early return"<<std::endl;
 		return result;
+	}
 	for (int i = 0; i < this->types.size(); i++)
 	{
+		std::cout<<"i: "<<i<<"type: "<<this->types[i]<<std::endl;
 		switch (this->types[i])
 		{
 		case 0:{
+			llvm::Value * tmp = this->terms[i]->codeGen(context);//my
+			std::cout<<"get tmp"<<std::endl;
 			result = llvm::BinaryOperator::Create(
 				llvm::Instruction::FAdd,
-				result, this->terms[i]->codeGen(context),
+				result, tmp,
 				llvm::Twine(""),
 				context->getCurBlock());
 			break;}
@@ -1057,14 +1137,20 @@ llvm::Value *NExpr::codeGen(CodeGenContext *context)
 			break;
 		}
 	}
+	std::cout<<"expr return"<<std::endl;
 	return result;
 }
 
 llvm::Value *NTerm::codeGen(CodeGenContext *context)
 {
+	std::cout<<"term codegen"<<std::endl;
+	std::cout<<"term factor size "<<this->factors.size()<<std::endl;
 	llvm::Value *result = this->factors[0]->codeGen(context);
-	if (this->factors.size() == 1)
+	std::cout<<"term result"<<std::endl;
+	if (this->factors.size() == 1){
+		std::cout<<"term early return"<<std::endl;
 		return result;
+	}
 	for (int i = 0; i < this->types.size(); i++)
 	{
 		switch (this->types[i])
@@ -1099,7 +1185,7 @@ llvm::Value *NTerm::codeGen(CodeGenContext *context)
 			break;}
 		case 4:break;
 		default:
-			//error info
+			std::cout<<"Unknown term type"<<std::endl;
 			break;
 		}
 	}
@@ -1108,13 +1194,82 @@ llvm::Value *NTerm::codeGen(CodeGenContext *context)
 
 llvm::Value *NFactor::codeGen(CodeGenContext *context)
 {
+	std::cout<<"factor codegen"<<std::endl;
+	std::cout<<this->type<<std::endl;
+	if (this->factor!=nullptr){//my
+		std::cout<<"this factor type: "<<this->factor->type<<std::endl;
+	}
+	if(this->constValue!=nullptr){
+		std::cout<<"this const type: "<<this->constValue->type<<std::endl;
+	}
 	switch (this->type)
 	{
 	case 0: return context->getValue(this->NAME);  //NAME
 	case 1:  //NAME  LP  args_list  RP
 	case 2:  //SYS_FUNCT
-	case 3:  //SYS_FUNCT  LP  args_list  RP
-	case 4:  //const_value
+	case 3:{ //my //SYS_FUNCT  LP  args_list  RP
+		std::vector<llvm::Value *> argValues;  
+		llvm::Function *func = context->module->getFunction(this->NAME.c_str());  // 找到这个函数
+		if (func == nullptr) {
+			std::cout << "[Error] Function not defined" << std::endl;
+			exit(0);
+		}		
+		auto funcArgs_iter = func->arg_begin();
+		for (NExpression *arg : this->argsList->expressions) {
+			llvm::Value *funcArgValue = static_cast<llvm::Value *>(funcArgs_iter++);
+			if (funcArgValue->getType()->isPointerTy()) 
+			{  // 如果这个参数是指针（全局变量）
+				std::cout<<"func arg is point"<<std::endl;
+				if (arg->exprs[0]->terms[0]->factors[0]->type == 0) {  // 如果这个参数是变量
+					llvm::Value *ptr = context->getValue(
+						arg->exprs[0]->terms[0]->factors[0]->NAME);  // 取得变量的值
+					llvm::Type *ty;
+					while (ptr->getType() != llvm::Type::getInt32PtrTy(GlobalContext)) {
+						ptr = new llvm::LoadInst(
+							ptr->getType(), //my
+							ptr,
+							llvm::Twine(""),
+							false,
+							context->getCurBlock());
+					}
+					argValues.push_back(ptr);
+				}
+				else if (arg->exprs[0]->terms[0]->factors[0]->type == 8) {
+					if (true) {
+						std::vector<llvm::Value*> arrIdx(2);
+						arrIdx[0] = llvm::ConstantInt::get(
+							GlobalContext,
+							llvm::APInt(32, 0, true));
+						arrIdx[1] = arg->exprs[0]->terms[0]->factors[0]->expression->codeGen(context);
+						llvm::Value* ptr = llvm::GetElementPtrInst::CreateInBounds(
+							context->getValue(arg->exprs[0]->terms[0]->factors[0]->ID1),
+							llvm::ArrayRef<llvm::Value*>(arrIdx),
+							llvm::Twine("tempname"),
+							context->getCurBlock());
+						argValues.push_back(ptr);
+					}
+					else {
+						std::cout << "[Error] Array's Ref is not an array type variable" << std::endl;
+						exit(0);
+					}
+				}
+				else {
+					std::cout << "[Error] Wrong left value type" << std::endl;
+				}
+			}
+			else {
+				std::cout<<"func arg is not point"<<std::endl;
+				argValues.push_back(arg->codeGen(context));
+			}
+		}
+		ArrayRef< Value* > arguments(argValues);
+		return llvm::CallInst::Create(
+			func,
+			arguments,
+			llvm::Twine(""),
+			context->getCurBlock());
+		} break;
+	case 4:  return this->constValue->codeGen(context);//my //const_value
 	case 5:  //LP  expression  RP
 	case 6: { 
 		llvm::CmpInst::Create(

@@ -178,6 +178,8 @@ public:
         std::error_code EC;
         llvm::raw_fd_ostream OS("LLVM_IR", EC, llvm::sys::fs::F_None);
         llvm::WriteBitcodeToFile(*this->module, OS);
+        llvm::raw_fd_ostream OS2("LLVM_LL", EC, llvm::sys::fs::F_None);
+        this->module->print(OS2, nullptr, false);
         OS.flush();
     }
 
@@ -187,6 +189,7 @@ public:
 
         llvm::ExecutionEngine *exeEngine = llvm::EngineBuilder(std::unique_ptr<llvm::Module>(this->module)).create();
         exeEngine->finalizeObject();  // ensure the module is fully processed and is usable.
+        std::cout <<"finalized"<<std::endl;
         llvm::ArrayRef<llvm::GenericValue> noArgs;
         llvm::GenericValue value = exeEngine->runFunction(this->mainFunction,  //  Function *f
                                                           noArgs);             //  ArrayRef<GenericValue>  ArgValues

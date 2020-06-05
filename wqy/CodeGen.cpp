@@ -86,11 +86,6 @@ llvm::Value *NConstExpressionList::codeGen(CodeGenContext *context)
 {
 	std::cout << "cost expression list codegen" << std::endl;
 	std::cout <<"const exp list size: "<< this->constList.size() << std::endl;
-	/*
-	if (this->constList.size() > 1000){
-		this->constList.clear();//my
-	}
-	*/
     for(int i = 0; i < this->constList.size(); i++)
     {
         this->constList[i]->codeGen(context);
@@ -121,6 +116,7 @@ llvm::Value *NConst::codeGen(CodeGenContext *context)
 llvm::Value *NConstValue::codeGen(CodeGenContext *context)
 {
 	std::cout<<"const value type: "<<this->type<<std::endl;
+	std::cout<<"const value : "<<this->Integer<<std::endl;
 	switch (this->type)
 	{
 	case 0: return llvm::ConstantInt::get(llvm::Type::getInt32Ty(GlobalContext), this->Integer, true);
@@ -413,12 +409,11 @@ llvm::Value *NFuncDecl::codeGen(CodeGenContext *context)
 	this->subRoutine->codeGen(context);
 
 	if (this->funcHead->simpleType != nullptr) {
-		llvm::Type *ty;
-		ty = llvm::Type::getInt32PtrTy(GlobalContext);//my
+		llvm::Value *ptr =context->getValue(this->funcHead->NAME);
 		std::cout << "|--- Generating return value for function" << std::endl;
 		llvm::Value *load = new llvm::LoadInst( // 加载返回值的地址
-			ty,//my
-			context->getValue(this->funcHead->NAME),
+			ptr->getType()->getPointerElementType(),//my
+			ptr,
 			llvm::Twine(""),
 			false,
 			context->getCurBlock());
@@ -537,28 +532,20 @@ llvm::Value *NAssignStmt::codeGen(CodeGenContext *context)
 	std::cout <<"assignment type: "<<this->type << std::endl;
 	if (this->type == 0)
 	{
-		llvm::Type *ty;
-		ty = llvm::Type::getInt32PtrTy(GlobalContext); //my
 		llvm::Value *tmp = context->getValue(this->ID1);
 		std::cout<< "tmp type: "<<Print(tmp->getType())<<std::endl;
+		std::cout<< "is point: "<<tmp->getType()->isPointerTy()<<std::endl;
 		llvm::Value *load;
-		/*my
-		do {
+		do { //my
 			load = tmp;
 			tmp = new llvm::LoadInst(
+				tmp->getType()->getPointerElementType(),
 				tmp,
 				llvm::Twine(""),
 				false,
 				context->getCurBlock());
+			std::cout<<Print(tmp->getType())<<std::endl;
 		} while (tmp->getType()->isPointerTy());
-		*/
-		load = tmp;
-		tmp = new llvm::LoadInst(
-			tmp->getType(),
-			tmp,
-			llvm::Twine(""),
-			false,
-			context->getCurBlock());
 		std::cout<<"loadinst"<<std::endl;
 		llvm::Value* exp_val = this->expression1->codeGen(context);
 		std::cout<<"exp val"<<std::endl;
@@ -621,11 +608,9 @@ llvm::Value *NProcStmt::codeGen(CodeGenContext *context)
 				if (arg->exprs[0]->terms[0]->factors[0]->type == 0) {  // 如果这个参数是变量
 					llvm::Value *ptr = context->getValue(
 						arg->exprs[0]->terms[0]->factors[0]->NAME);  // 取得变量的值
-					llvm::Type *ty;
-					ty = llvm::Type::getInt32PtrTy(GlobalContext);//my
-					while (ptr->getType() != llvm::Type::getInt32PtrTy(GlobalContext)) {
+					while (ptr->getType()->isPointerTy()) {
 						ptr = new llvm::LoadInst(
-							ty,
+							ptr->getType()->getPointerElementType(),//my
 							ptr,
 							llvm::Twine(""),
 							false,
@@ -714,13 +699,14 @@ llvm::Value *NProcStmt::codeGen(CodeGenContext *context)
 			llvm::Twine(""),
 			context->getCurBlock());
 		}
-	case 2:{
+	case 3:{
 		if (this->Sys_proc == 0 or this->Sys_proc == 1)
 		{
 			std::string printf_format;
 			std::vector<llvm::Value *> printfArgs;
 			for (NExpression *arg : this->exprList->expressions) {
 				llvm::Value *argValue = arg->codeGen(context);  // 得到参数的值
+				std::cout<<"sys type"<<Print(argValue->getType())<<std::endl;//my
 				if (argValue->getType() == llvm::Type::getInt32Ty(GlobalContext)) {
 					printf_format += "%d";
 					std::cout << "|--- System call write variable previous name" << argValue->getName().str() << std::endl;
@@ -733,6 +719,21 @@ llvm::Value *NProcStmt::codeGen(CodeGenContext *context)
 				else if (argValue->getType() == llvm::Type::getInt8PtrTy(GlobalContext)) {
 					std::cout << "[Warning] string print is not supported" << std::endl;
 					exit(0);
+				}
+				else if(argValue->getType()->isPointerTy()){
+					llvm::Value *ptr = context->getValue(
+						arg->exprs[0]->terms[0]->factors[0]->NAME);  // 取得变量的值
+					while (ptr->getType()->isPointerTy()) {
+						ptr = new llvm::LoadInst(
+							ptr->getType()->getPointerElementType(),//my
+							ptr,
+							llvm::Twine(""),
+							false,
+							context->getCurBlock());
+					}
+					printf_format += "%d";
+					std::cout << "|--- System call write variable previous name" << argValue->getName().str() << std::endl;
+					printfArgs.push_back(ptr);
 				}
 				else {
 					std::cout << "[Error] Unknown type for printf" << std::endl;
@@ -776,7 +777,7 @@ llvm::Value *NProcStmt::codeGen(CodeGenContext *context)
 		{
 			//error info
 		}}
-	case 3:  //SYS_PROC LP expression RP
+	case 2:  //SYS_PROC LP expression RP
 		break;
 	case 4:
 		break;
@@ -1031,6 +1032,15 @@ llvm::Value *NExpression::codeGen(CodeGenContext *context)
 	for (int i = 0; i < this->types.size(); i++)
 	{
 		std::cout<<"expression i "<<i<<" type "<<this->types[i]<<std::endl;
+		while (result->getType()->isPointerTy()) { //my
+			std::cout<<"point expression"<<std::endl;
+			result = new llvm::LoadInst(
+						result->getType()->getPointerElementType(),
+						result,
+						llvm::Twine(""),
+						false,
+						context->getCurBlock());
+		}
 		switch (this->types[i])
 		{
 		case 0:{
@@ -1105,20 +1115,29 @@ llvm::Value *NExpr::codeGen(CodeGenContext *context)
 	for (int i = 0; i < this->types.size(); i++)
 	{
 		std::cout<<"i: "<<i<<"type: "<<this->types[i]<<std::endl;
+		while (result->getType()->isPointerTy()) { //my
+			std::cout<<"point expr"<<std::endl;
+			result = new llvm::LoadInst(
+						result->getType()->getPointerElementType(),
+						result,
+						llvm::Twine(""),
+						false,
+						context->getCurBlock());
+		}
 		switch (this->types[i])
 		{
 		case 0:{
 			llvm::Value * tmp = this->terms[i]->codeGen(context);//my
 			std::cout<<"get tmp"<<std::endl;
 			result = llvm::BinaryOperator::Create(
-				llvm::Instruction::FAdd,
+				llvm::Instruction::Add, //my
 				result, tmp,
 				llvm::Twine(""),
 				context->getCurBlock());
 			break;}
 		case 1:{
 			result = llvm::BinaryOperator::Create(
-				llvm::Instruction::FSub,
+				llvm::Instruction::Sub, //my
 				result, this->terms[i]->codeGen(context),
 				llvm::Twine(""),
 				context->getCurBlock());
@@ -1157,21 +1176,21 @@ llvm::Value *NTerm::codeGen(CodeGenContext *context)
 		{
 		case 0:{
 			result = llvm::BinaryOperator::Create(
-				llvm::Instruction::FMul,
+				llvm::Instruction::Mul,//my
 				result, this->factors[i]->codeGen(context),
 				llvm::Twine(""),
 				context->getCurBlock());
 			break;}
 		case 1:{
 			result = llvm::BinaryOperator::Create(
-				llvm::Instruction::FDiv,
+				llvm::Instruction::UDiv, //my
 				result, this->factors[i]->codeGen(context),
 				llvm::Twine(""),
 				context->getCurBlock());
 			break;}
 		case 2:{
 			result = llvm::BinaryOperator::Create(
-				llvm::Instruction::FRem,
+				llvm::Instruction::URem, //my
 				result, this->factors[i]->codeGen(context),
 				llvm::Twine(""),
 				context->getCurBlock());
@@ -1200,11 +1219,14 @@ llvm::Value *NFactor::codeGen(CodeGenContext *context)
 		std::cout<<"this factor type: "<<this->factor->type<<std::endl;
 	}
 	if(this->constValue!=nullptr){
-		std::cout<<"this const type: "<<this->constValue->type<<std::endl;
+		std::cout<<"this const value: "<<this->constValue->Integer<<std::endl;
 	}
 	switch (this->type)
 	{
-	case 0: return context->getValue(this->NAME);  //NAME
+	case 0: {
+		llvm::Value *ptr =context->getValue(this->NAME);  //my
+		return ptr;
+		}//NAME
 	case 1:  //NAME  LP  args_list  RP
 	case 2:  //SYS_FUNCT
 	case 3:{ //my //SYS_FUNCT  LP  args_list  RP
@@ -1224,9 +1246,9 @@ llvm::Value *NFactor::codeGen(CodeGenContext *context)
 					llvm::Value *ptr = context->getValue(
 						arg->exprs[0]->terms[0]->factors[0]->NAME);  // 取得变量的值
 					llvm::Type *ty;
-					while (ptr->getType() != llvm::Type::getInt32PtrTy(GlobalContext)) {
+					while (ptr->getType()->isPointerTy()) {//my
 						ptr = new llvm::LoadInst(
-							ptr->getType(), //my
+							ptr->getType()->getPointerElementType(), //my
 							ptr,
 							llvm::Twine(""),
 							false,
@@ -1280,7 +1302,7 @@ llvm::Value *NFactor::codeGen(CodeGenContext *context)
 			llvm::Twine(""),
 			context->getCurBlock());}//NOT  factor
 	case 7:  return llvm::BinaryOperator::Create(
-		llvm::Instruction::FSub,
+		llvm::Instruction::Sub, //my
 		llvm::ConstantInt::get(llvm::Type::getInt32Ty(GlobalContext), 0, true),
 		this->factor->codeGen(context),
 		llvm::Twine(""),

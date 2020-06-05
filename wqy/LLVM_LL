@@ -1,0 +1,61 @@
+; ModuleID = 'main'
+source_filename = "main"
+
+@i = global i32 0
+@.str = private constant [4 x i8] c"%d\0A\00"
+
+define internal void @main() {
+entry:
+  %0 = load i32, i32* @i, align 4
+  %1 = call i32 @go(i32 10)
+  store i32 %1, i32* @i, align 4
+  %2 = load i32, i32* @i, align 4
+  %3 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i32 0, i32 0), i32 %2)
+  ret void
+}
+
+declare i32 @printf(i8*, ...)
+
+define internal i32 @go(i32 %a1) {
+entry:
+  %a = alloca i32, align 4
+  store i32 %a1, i32* %a, align 4
+  %go = alloca i32, align 4
+  %0 = load i32, i32* %a, align 4
+  %1 = icmp eq i32 %0, 1
+  br i1 %1, label %then, label %else
+
+then:                                             ; preds = %entry
+  %2 = load i32, i32* %go, align 4
+  store i32 1, i32* %go, align 4
+  br label %merge
+
+else:                                             ; preds = %entry
+  %3 = load i32, i32* %a, align 4
+  %4 = icmp eq i32 %3, 2
+  br i1 %4, label %then2, label %else3
+
+merge:                                            ; preds = %merge4, %then
+  %5 = load i32, i32* %go, align 4
+  ret i32 %5
+
+then2:                                            ; preds = %else
+  %6 = load i32, i32* %go, align 4
+  store i32 1, i32* %go, align 4
+  br label %merge4
+
+else3:                                            ; preds = %else
+  %7 = load i32, i32* %go, align 4
+  %8 = load i32, i32* %a, align 4
+  %9 = sub i32 %8, 1
+  %10 = call i32 @go(i32 %9)
+  %11 = load i32, i32* %a, align 4
+  %12 = sub i32 %11, 2
+  %13 = call i32 @go(i32 %12)
+  %14 = add i32 %10, %13
+  store i32 %14, i32* %go, align 4
+  br label %merge4
+
+merge4:                                           ; preds = %else3, %then2
+  br label %merge
+}

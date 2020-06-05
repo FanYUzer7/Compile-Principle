@@ -1591,7 +1591,7 @@ yyreduce:
 
   case 11:
 #line 164 "parser.y" /* yacc.c:1646  */
-    {(yyval.constValue) = new NConstValue(0, std::stoi(*(yyvsp[0].string))); if(DEBUG) std::cout << "const_value(1)" << std::endl;}
+    {(yyval.constValue) = new NConstValue(0, std::stoi(*(yyvsp[0].string))); if(DEBUG) std::cout << "const_value(1)" << *(yyvsp[0].string)<<std::stoi(*(yyvsp[0].string))<<std::endl;} //my
 #line 1596 "parser.cpp" /* yacc.c:1646  */
     break;
 
@@ -2233,7 +2233,7 @@ yyreduce:
 
   case 118:
 #line 328 "parser.y" /* yacc.c:1646  */
-    {(yyval.factor) = new NFactor(4, (yyvsp[0].constValue)); if(DEBUG) std::cout << "factor(5)" << std::endl;}
+    {(yyval.factor) = new NFactor(4, (yyvsp[0].constValue)); if(DEBUG) std::cout << "factor(5)" << (yyvsp[0].constValue->Integer)<<(yyvsp[0].constValue->Char)<<(yyvsp[0].constValue->Sys_con)<<(yyvsp[0].constValue->Real)<< std::endl;} //my
 #line 2238 "parser.cpp" /* yacc.c:1646  */
     break;
 

@@ -154,15 +154,33 @@ public:
     char Char;
     int Sys_con; //0 for false, 1 for maxint, 2 for true
 
-    NConstValue(int type, int Integer) : type(type)
+    NConstValue(int type, int Int) : type(type)
     {
+        std::cout<<"construct int"<<std::endl;
+        std::cout<<Int<<std::endl;
         if (type == 0)
-            Integer = Integer;
+            this->Integer = Int;
         else
-            Sys_con = Integer;
+            Sys_con = Int;
     }
-    NConstValue(int type, double Real) : type(type), Real(Real) {}
-    NConstValue(int type, char Char) : type(type), Char(Char) {}
+    NConstValue(int type, double Real) : type(type)
+    {
+       if (type ==1){
+            Real = Real;
+       }
+       else{
+           std::cout<<"const real error"<<std::endl;
+       }
+    } 
+    NConstValue(int type, char Char) : type(type)
+    {
+       if (type ==2){
+            Char = Char;
+       }
+       else{
+           std::cout<<"const char error"<<std::endl;
+       }
+    } 
 
 public:
     llvm::Value *codeGen(CodeGenContext *context);

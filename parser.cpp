@@ -568,13 +568,13 @@ static const yytype_uint16 yyrline[] =
      185,   187,   189,   190,   192,   194,   195,   197,   198,   200,
      201,   203,   205,   206,   207,   208,   209,   211,   213,   215,
      217,   219,   220,   222,   223,   225,   226,   228,   230,   232,
-     234,   234,   236,   237,   239,   240,   242,   243,   244,   245,
-     246,   247,   248,   249,   250,   252,   253,   254,   256,   257,
-     258,   259,   260,   262,   264,   265,   267,   269,   271,   273,
-     274,   276,   278,   279,   281,   282,   284,   286,   287,   289,
-     290,   291,   292,   293,   294,   295,   297,   298,   299,   300,
-     302,   303,   304,   305,   306,   308,   309,   310,   311,   312,
-     313,   314,   315,   316,   317,   319,   320
+     234,   236,   238,   239,   241,   242,   244,   245,   246,   247,
+     248,   249,   250,   251,   252,   254,   255,   256,   258,   259,
+     260,   261,   262,   264,   266,   267,   269,   271,   273,   275,
+     276,   278,   280,   281,   283,   284,   286,   288,   289,   291,
+     292,   293,   294,   295,   296,   297,   299,   300,   301,   302,
+     304,   305,   306,   307,   308,   310,   311,   312,   313,   314,
+     315,   316,   317,   318,   319,   321,   322
 };
 #endif
 
@@ -598,10 +598,10 @@ static const char *const yytname[] =
   "name_list", "var_part", "var_decl_list", "var_decl", "routine_part",
   "function_decl", "function_head", "procedure_decl", "procedure_head",
   "parameters", "para_decl_list", "para_type_list", "var_para_list",
-  "val_para_list", "routine_body", "compound_stmt", "$@1", "stmt_list",
-  "stmt", "non_label_stmt", "assign_stmt", "proc_stmt", "if_stmt",
-  "else_clause", "repeat_stmt", "while_stmt", "for_stmt", "direction",
-  "case_stmt", "case_expr_list", "case_expr", "goto_stmt",
+  "val_para_list", "routine_body", "compound_stmt", "NULLPART",
+  "stmt_list", "stmt", "non_label_stmt", "assign_stmt", "proc_stmt",
+  "if_stmt", "else_clause", "repeat_stmt", "while_stmt", "for_stmt",
+  "direction", "case_stmt", "case_expr_list", "case_expr", "goto_stmt",
   "expression_list", "expression", "expr", "term", "factor", "args_list", YY_NULLPTR
 };
 #endif
@@ -669,11 +669,11 @@ static const yytype_int16 yypact[] =
 static const yytype_uint8 yydefact[] =
 {
        0,     0,     0,     8,     0,     1,     0,     0,     0,    16,
-       3,     0,     7,     2,    60,     4,    59,     0,    38,     0,
+       3,     0,     7,     2,    61,     4,    59,     0,    38,     0,
        0,    63,     0,    15,    18,     0,    46,    14,    11,    12,
       13,     0,     0,     0,     0,    17,    36,     0,    37,    40,
        0,     0,     6,    44,     0,    45,     0,    10,     0,     0,
-      61,     0,     0,     0,     0,    63,     0,    80,    78,     0,
+      60,     0,     0,     0,     0,    63,     0,    80,    78,     0,
       68,     0,    65,    66,    67,    69,    70,    71,    72,    73,
       74,     0,     0,     0,     0,    23,    24,     0,     0,    20,
       21,    22,     0,     0,    39,    52,    52,    42,    43,     8,
@@ -838,7 +838,7 @@ static const yytype_uint8 yyr1[] =
       79,    80,    81,    81,    82,    83,    83,    84,    84,    85,
       85,    86,    87,    87,    87,    87,    87,    88,    89,    90,
       91,    92,    92,    93,    93,    94,    94,    95,    96,    97,
-      99,    98,   100,   100,   101,   101,   102,   102,   102,   102,
+      98,    99,   100,   100,   101,   101,   102,   102,   102,   102,
      102,   102,   102,   102,   102,   103,   103,   103,   104,   104,
      104,   104,   104,   105,   106,   106,   107,   108,   109,   110,
      110,   111,   112,   112,   113,   113,   114,   115,   115,   116,
@@ -856,7 +856,7 @@ static const yytype_uint8 yyr2[] =
        6,     3,     2,     1,     4,     3,     1,     2,     0,     2,
        1,     4,     2,     2,     1,     1,     0,     4,     5,     4,
        3,     3,     0,     3,     1,     3,     3,     2,     1,     1,
-       0,     4,     3,     0,     3,     1,     1,     1,     1,     1,
+       4,     0,     3,     0,     3,     1,     1,     1,     1,     1,
        1,     1,     1,     1,     1,     3,     6,     5,     1,     4,
        1,     4,     4,     5,     2,     0,     4,     4,     8,     1,
        1,     5,     2,     1,     4,     4,     2,     3,     1,     3,
@@ -1584,7 +1584,7 @@ yyreduce:
 
   case 8:
 #line 155 "parse.y"
-    {if(DEBUG) treeNode << "const_part(2)" << std::endl;}
+    {if(DEBUG) treeNode << "const_part(2)" << std::endl; (yyval.constPart) = new NConstPart();}
 #line 1589 "parser.cpp"
     break;
 
@@ -1632,7 +1632,7 @@ yyreduce:
 
   case 16:
 #line 166 "parse.y"
-    {if(DEBUG) treeNode << "type_part(2)" << std::endl;}
+    {if(DEBUG) treeNode << "type_part(2)" << std::endl; (yyval.typePart) = new NTypePart();}
 #line 1637 "parser.cpp"
     break;
 
@@ -1764,7 +1764,7 @@ yyreduce:
 
   case 38:
 #line 198 "parse.y"
-    {if(DEBUG) treeNode << "var_part(2)" << std::endl;}
+    {if(DEBUG) treeNode << "var_part(2)" << std::endl; (yyval.varPart) = new NVarPart();}
 #line 1769 "parser.cpp"
     break;
 
@@ -1812,7 +1812,7 @@ yyreduce:
 
   case 46:
 #line 209 "parse.y"
-    {if(DEBUG) treeNode << "routine_part(5)" << std::endl;}
+    {if(DEBUG) treeNode << "routine_part(5)" << std::endl; (yyval.routinePart) = new NRoutinePart();}
 #line 1817 "parser.cpp"
     break;
 
@@ -1848,7 +1848,7 @@ yyreduce:
 
   case 52:
 #line 220 "parse.y"
-    {if(DEBUG) treeNode << "parameters(2)" << std::endl;}
+    {if(DEBUG) treeNode << "parameters(2)" << std::endl; (yyval.params) = new NParams();}
 #line 1853 "parser.cpp"
     break;
 
@@ -1896,402 +1896,402 @@ yyreduce:
 
   case 60:
 #line 234 "parse.y"
-    {blocknumber++; contblock[blocknumber]=lastblock; lastblock=blocknumber;}
+    {if(DEBUG) treeNode << "compound_stmt" << std::endl; (yyval.compStmt) = new NCompStmt((yyvsp[-1].stmtList)); lastblock=contblock[blocknumber]; }
 #line 1901 "parser.cpp"
     break;
 
   case 61:
-#line 234 "parse.y"
-    {if(DEBUG) treeNode << "compound_stmt" << std::endl; (yyval.compStmt) = new NCompStmt((yyvsp[-1].stmtList)); lastblock=contblock[blocknumber]; }
+#line 236 "parse.y"
+    {blocknumber++; contblock[blocknumber]=lastblock; lastblock=blocknumber;}
 #line 1907 "parser.cpp"
     break;
 
   case 62:
-#line 236 "parse.y"
+#line 238 "parse.y"
     {if(DEBUG) treeNode << "stmt_list(1)" << std::endl; (yyvsp[-2].stmtList)->stmts.push_back((yyvsp[-1].stmt)); }
 #line 1913 "parser.cpp"
     break;
 
   case 63:
-#line 237 "parse.y"
+#line 239 "parse.y"
     {if(DEBUG) treeNode << "stmt_list(2)" << std::endl; (yyval.stmtList) = new NStmtList(); }
 #line 1919 "parser.cpp"
     break;
 
   case 64:
-#line 239 "parse.y"
+#line 241 "parse.y"
     {if(DEBUG) treeNode << "stmt(1)" << std::endl; (yyval.stmt) = new NStmt(0, std::stoi(*(yyvsp[-2].string)), (yyvsp[0].nonLabStmt)); }
 #line 1925 "parser.cpp"
     break;
 
   case 65:
-#line 240 "parse.y"
+#line 242 "parse.y"
     {if(DEBUG) treeNode << "stmt(2)" << std::endl; (yyval.stmt) = new NStmt(1, (yyvsp[0].nonLabStmt)); }
 #line 1931 "parser.cpp"
     break;
 
   case 66:
-#line 242 "parse.y"
+#line 244 "parse.y"
     {if(DEBUG) treeNode << "non_label_stmt(1)" << std::endl; (yyval.nonLabStmt) = new NNonLabStmt(0, (yyvsp[0].assignStmt)); }
 #line 1937 "parser.cpp"
     break;
 
   case 67:
-#line 243 "parse.y"
+#line 245 "parse.y"
     {if(DEBUG) treeNode << "non_label_stmt(2)" << std::endl; (yyval.nonLabStmt) = new NNonLabStmt(1, (yyvsp[0].procStmt)); }
 #line 1943 "parser.cpp"
     break;
 
   case 68:
-#line 244 "parse.y"
+#line 246 "parse.y"
     {if(DEBUG) treeNode << "non_label_stmt(3)" << std::endl; (yyval.nonLabStmt) = new NNonLabStmt(2, (yyvsp[0].compStmt)); }
 #line 1949 "parser.cpp"
     break;
 
   case 69:
-#line 245 "parse.y"
+#line 247 "parse.y"
     {if(DEBUG) treeNode << "non_label_stmt(4)" << std::endl; (yyval.nonLabStmt) = new NNonLabStmt(3, (yyvsp[0].ifStmt)); }
 #line 1955 "parser.cpp"
     break;
 
   case 70:
-#line 246 "parse.y"
+#line 248 "parse.y"
     {if(DEBUG) treeNode << "non_label_stmt(5)" << std::endl; (yyval.nonLabStmt) = new NNonLabStmt(4, (yyvsp[0].repeatStmt)); }
 #line 1961 "parser.cpp"
     break;
 
   case 71:
-#line 247 "parse.y"
+#line 249 "parse.y"
     {if(DEBUG) treeNode << "non_label_stmt(6)" << std::endl; (yyval.nonLabStmt) = new NNonLabStmt(5, (yyvsp[0].whileStmt)); }
 #line 1967 "parser.cpp"
     break;
 
   case 72:
-#line 248 "parse.y"
+#line 250 "parse.y"
     {if(DEBUG) treeNode << "non_label_stmt(7)" << std::endl; (yyval.nonLabStmt) = new NNonLabStmt(6, (yyvsp[0].forStmt)); }
 #line 1973 "parser.cpp"
     break;
 
   case 73:
-#line 249 "parse.y"
+#line 251 "parse.y"
     {if(DEBUG) treeNode << "non_label_stmt(8)" << std::endl; (yyval.nonLabStmt) = new NNonLabStmt(7, (yyvsp[0].caseStmt)); }
 #line 1979 "parser.cpp"
     break;
 
   case 74:
-#line 250 "parse.y"
+#line 252 "parse.y"
     {if(DEBUG) treeNode << "non_label_stmt(9)" << std::endl; (yyval.nonLabStmt) = new NNonLabStmt(8, (yyvsp[0].gotoStmt)); }
 #line 1985 "parser.cpp"
     break;
 
   case 75:
-#line 252 "parse.y"
+#line 254 "parse.y"
     {if(DEBUG) treeNode << "assign_stmt(1)" << std::endl; (yyval.assignStmt) = new NAssignStmt(0, *(yyvsp[-2].string), (yyvsp[0].expression)); }
 #line 1991 "parser.cpp"
     break;
 
   case 76:
-#line 253 "parse.y"
+#line 255 "parse.y"
     {if(DEBUG) treeNode << "assign_stmt(2)" << std::endl; (yyval.assignStmt) = new NAssignStmt(1, *(yyvsp[-5].string), (yyvsp[-3].expression), (yyvsp[0].expression)); }
 #line 1997 "parser.cpp"
     break;
 
   case 77:
-#line 254 "parse.y"
+#line 256 "parse.y"
     {if(DEBUG) treeNode << "assign_stmt(3)" << std::endl; (yyval.assignStmt) = new NAssignStmt(0, *(yyvsp[-4].string), *(yyvsp[-2].string), (yyvsp[0].expression)); }
 #line 2003 "parser.cpp"
     break;
 
   case 78:
-#line 256 "parse.y"
+#line 258 "parse.y"
     {if(DEBUG) treeNode << "proc_stmt(1)" << std::endl; (yyval.procStmt) = new NProcStmt(0, *(yyvsp[0].string)); }
 #line 2009 "parser.cpp"
     break;
 
   case 79:
-#line 257 "parse.y"
+#line 259 "parse.y"
     {if(DEBUG) treeNode << "proc_stmt(2)" << std::endl; (yyval.procStmt) = new NProcStmt(1, *(yyvsp[-3].string), (yyvsp[-1].argsList)); }
 #line 2015 "parser.cpp"
     break;
 
   case 80:
-#line 258 "parse.y"
+#line 260 "parse.y"
     {if(DEBUG) treeNode << "proc_stmt(3)" << std::endl; (yyval.procStmt) = new NProcStmt(2, (*(yyvsp[0].string)=="write")?0:1); }
 #line 2021 "parser.cpp"
     break;
 
   case 81:
-#line 259 "parse.y"
+#line 261 "parse.y"
     {if(DEBUG) treeNode << "proc_stmt(4)" << std::endl; (yyval.procStmt) = new NProcStmt(3, (*(yyvsp[-3].string)=="write")?0:1, (yyvsp[-1].exprList)); }
 #line 2027 "parser.cpp"
     break;
 
   case 82:
-#line 260 "parse.y"
+#line 262 "parse.y"
     {if(DEBUG) treeNode << "proc_stmt(5)" << std::endl; (yyval.procStmt) = new NProcStmt(4, (yyvsp[-1].factor)); }
 #line 2033 "parser.cpp"
     break;
 
   case 83:
-#line 262 "parse.y"
+#line 264 "parse.y"
     {if(DEBUG) treeNode << "if_stmt" << std::endl; (yyval.ifStmt) = new NIfStmt((yyvsp[-3].expression), (yyvsp[-1].stmt), (yyvsp[0].elseStmt)); }
 #line 2039 "parser.cpp"
     break;
 
   case 84:
-#line 264 "parse.y"
+#line 266 "parse.y"
     {if(DEBUG) treeNode << "else_clause(1)" << std::endl; (yyval.elseStmt) = new NElseStmt((yyvsp[0].stmt)); }
 #line 2045 "parser.cpp"
     break;
 
   case 85:
-#line 265 "parse.y"
-    {if(DEBUG) treeNode << "else_clause(2)" << std::endl;}
+#line 267 "parse.y"
+    {if(DEBUG) treeNode << "else_clause(2)" << std::endl; (yyval.elseStmt) = new NElseStmt();}
 #line 2051 "parser.cpp"
     break;
 
   case 86:
-#line 267 "parse.y"
+#line 269 "parse.y"
     {if(DEBUG) treeNode << "repeat_stmt" << std::endl; (yyval.repeatStmt) = new NRepeatStmt((yyvsp[-2].stmtList), (yyvsp[0].expression)); }
 #line 2057 "parser.cpp"
     break;
 
   case 87:
-#line 269 "parse.y"
+#line 271 "parse.y"
     {if(DEBUG) treeNode << "while_stmt" << std::endl; (yyval.whileStmt) = new NWhileStmt((yyvsp[-2].expression), (yyvsp[0].stmt)); }
 #line 2063 "parser.cpp"
     break;
 
   case 88:
-#line 271 "parse.y"
+#line 273 "parse.y"
     {if(DEBUG) treeNode << "for_stmt" << std::endl; (yyval.forStmt) = new NForStmt(*(yyvsp[-6].string), (yyvsp[-4].expression), (yyvsp[-3].direction), (yyvsp[-2].expression), (yyvsp[0].stmt)); }
 #line 2069 "parser.cpp"
     break;
 
   case 89:
-#line 273 "parse.y"
+#line 275 "parse.y"
     {if(DEBUG) treeNode << "direction(1)" << std::endl; (yyval.direction) = new NDirection(0); }
 #line 2075 "parser.cpp"
     break;
 
   case 90:
-#line 274 "parse.y"
+#line 276 "parse.y"
     {if(DEBUG) treeNode << "direction(2)" << std::endl; (yyval.direction) = new NDirection(1); }
 #line 2081 "parser.cpp"
     break;
 
   case 91:
-#line 276 "parse.y"
+#line 278 "parse.y"
     {if(DEBUG) treeNode << "case_stmt" << std::endl; (yyval.caseStmt) = new NCaseStmt((yyvsp[-3].expression), (yyvsp[-1].caseExprList)); }
 #line 2087 "parser.cpp"
     break;
 
   case 92:
-#line 278 "parse.y"
+#line 280 "parse.y"
     {if(DEBUG) treeNode << "case_expr_list(1)" << std::endl; (yyvsp[-1].caseExprList)->caseExprs.push_back((yyvsp[0].caseExpr)); }
 #line 2093 "parser.cpp"
     break;
 
   case 93:
-#line 279 "parse.y"
+#line 281 "parse.y"
     {if(DEBUG) treeNode << "case_expr_list(2)" << std::endl; (yyval.caseExprList) = new NCaseExprList(); (yyval.caseExprList)->caseExprs.push_back((yyvsp[0].caseExpr)); }
 #line 2099 "parser.cpp"
     break;
 
   case 94:
-#line 281 "parse.y"
+#line 283 "parse.y"
     {if(DEBUG) treeNode << "case_expr(1)" << std::endl; (yyval.caseExpr) = new NCaseExpr(0, (yyvsp[-3].constValue), (yyvsp[-1].stmt)); }
 #line 2105 "parser.cpp"
     break;
 
   case 95:
-#line 282 "parse.y"
+#line 284 "parse.y"
     {if(DEBUG) treeNode << "case_expr(2)" << std::endl; (yyval.caseExpr) = new NCaseExpr(1, *(yyvsp[-3].string), (yyvsp[-1].stmt)); }
 #line 2111 "parser.cpp"
     break;
 
   case 96:
-#line 284 "parse.y"
+#line 286 "parse.y"
     {if(DEBUG) treeNode << "goto_stmt" << std::endl; (yyval.gotoStmt) = new NGotoStmt(std::stoi(*(yyvsp[0].string))); }
 #line 2117 "parser.cpp"
     break;
 
   case 97:
-#line 286 "parse.y"
+#line 288 "parse.y"
     {if(DEBUG) treeNode << "expression_list(1)" << std::endl; (yyvsp[-2].exprList)->expressions.push_back((yyvsp[0].expression)); }
 #line 2123 "parser.cpp"
     break;
 
   case 98:
-#line 287 "parse.y"
+#line 289 "parse.y"
     {if(DEBUG) treeNode << "expression_list(2)" << std::endl; (yyval.exprList) = new NExprList(); (yyval.exprList)->expressions.push_back((yyvsp[0].expression)); }
 #line 2129 "parser.cpp"
     break;
 
   case 99:
-#line 289 "parse.y"
+#line 291 "parse.y"
     {if(DEBUG) treeNode << "expression(1)" << std::endl; (yyvsp[-2].expression)->exprs.push_back((yyvsp[0].expr)); (yyvsp[-2].expression)->types.push_back(0); }
 #line 2135 "parser.cpp"
     break;
 
   case 100:
-#line 290 "parse.y"
+#line 292 "parse.y"
     {if(DEBUG) treeNode << "expression(2)" << std::endl; (yyvsp[-2].expression)->exprs.push_back((yyvsp[0].expr)); (yyvsp[-2].expression)->types.push_back(1); }
 #line 2141 "parser.cpp"
     break;
 
   case 101:
-#line 291 "parse.y"
+#line 293 "parse.y"
     {if(DEBUG) treeNode << "expression(3)" << std::endl; (yyvsp[-2].expression)->exprs.push_back((yyvsp[0].expr)); (yyvsp[-2].expression)->types.push_back(2); }
 #line 2147 "parser.cpp"
     break;
 
   case 102:
-#line 292 "parse.y"
+#line 294 "parse.y"
     {if(DEBUG) treeNode << "expression(4)" << std::endl; (yyvsp[-2].expression)->exprs.push_back((yyvsp[0].expr)); (yyvsp[-2].expression)->types.push_back(3); }
 #line 2153 "parser.cpp"
     break;
 
   case 103:
-#line 293 "parse.y"
+#line 295 "parse.y"
     {if(DEBUG) treeNode << "expression(5)" << std::endl; (yyvsp[-2].expression)->exprs.push_back((yyvsp[0].expr)); (yyvsp[-2].expression)->types.push_back(4); }
 #line 2159 "parser.cpp"
     break;
 
   case 104:
-#line 294 "parse.y"
+#line 296 "parse.y"
     {if(DEBUG) treeNode << "expression(6)" << std::endl; (yyvsp[-2].expression)->exprs.push_back((yyvsp[0].expr)); (yyvsp[-2].expression)->types.push_back(5); }
 #line 2165 "parser.cpp"
     break;
 
   case 105:
-#line 295 "parse.y"
+#line 297 "parse.y"
     {if(DEBUG) treeNode << "expression(7)" << std::endl; (yyval.expression) = new NExpression(); (yyval.expression)->exprs.push_back((yyvsp[0].expr)); (yyval.expression)->types.push_back(6); }
 #line 2171 "parser.cpp"
     break;
 
   case 106:
-#line 297 "parse.y"
+#line 299 "parse.y"
     {if(DEBUG) treeNode << "expr(1)" << std::endl; (yyvsp[-2].expr)->terms.push_back((yyvsp[0].term)); (yyvsp[-2].expr)->types.push_back(0); }
 #line 2177 "parser.cpp"
     break;
 
   case 107:
-#line 298 "parse.y"
+#line 300 "parse.y"
     {if(DEBUG) treeNode << "expr(2)" << std::endl; (yyvsp[-2].expr)->terms.push_back((yyvsp[0].term)); (yyvsp[-2].expr)->types.push_back(1); }
 #line 2183 "parser.cpp"
     break;
 
   case 108:
-#line 299 "parse.y"
+#line 301 "parse.y"
     {if(DEBUG) treeNode << "expr(3)" << std::endl; (yyvsp[-2].expr)->terms.push_back((yyvsp[0].term)); (yyvsp[-2].expr)->types.push_back(2); }
 #line 2189 "parser.cpp"
     break;
 
   case 109:
-#line 300 "parse.y"
+#line 302 "parse.y"
     {if(DEBUG) treeNode << "expr(4)" << std::endl; (yyval.expr) = new NExpr(); (yyval.expr)->terms.push_back((yyvsp[0].term)); (yyval.expr)->types.push_back(3); }
 #line 2195 "parser.cpp"
     break;
 
   case 110:
-#line 302 "parse.y"
+#line 304 "parse.y"
     {if(DEBUG) treeNode << "term(1)" << std::endl; (yyvsp[-2].term)->factors.push_back((yyvsp[0].factor)); (yyvsp[-2].term)->types.push_back(0); }
 #line 2201 "parser.cpp"
     break;
 
   case 111:
-#line 303 "parse.y"
+#line 305 "parse.y"
     {if(DEBUG) treeNode << "term(2)" << std::endl; (yyvsp[-2].term)->factors.push_back((yyvsp[0].factor)); (yyvsp[-2].term)->types.push_back(1); }
 #line 2207 "parser.cpp"
     break;
 
   case 112:
-#line 304 "parse.y"
+#line 306 "parse.y"
     {if(DEBUG) treeNode << "term(3)" << std::endl; (yyvsp[-2].term)->factors.push_back((yyvsp[0].factor)); (yyvsp[-2].term)->types.push_back(2); }
 #line 2213 "parser.cpp"
     break;
 
   case 113:
-#line 305 "parse.y"
+#line 307 "parse.y"
     {if(DEBUG) treeNode << "term(4)" << std::endl; (yyvsp[-2].term)->factors.push_back((yyvsp[0].factor)); (yyvsp[-2].term)->types.push_back(3); }
 #line 2219 "parser.cpp"
     break;
 
   case 114:
-#line 306 "parse.y"
+#line 308 "parse.y"
     {if(DEBUG) treeNode << "term(5)" << std::endl;(yyval.term) = new NTerm(); (yyval.term)->factors.push_back((yyvsp[0].factor)); (yyval.term)->types.push_back(4); }
 #line 2225 "parser.cpp"
     break;
 
   case 115:
-#line 308 "parse.y"
+#line 310 "parse.y"
     {if(DEBUG) treeNode << "factor(1)" << std::endl; (yyval.factor) = new NFactor(0, *(yyvsp[0].string)); }
 #line 2231 "parser.cpp"
     break;
 
   case 116:
-#line 309 "parse.y"
+#line 311 "parse.y"
     {if(DEBUG) treeNode << "factor(2)" << std::endl; (yyval.factor) = new NFactor(1, *(yyvsp[-3].string), (yyvsp[-1].argsList)); }
 #line 2237 "parser.cpp"
     break;
 
   case 117:
-#line 310 "parse.y"
+#line 312 "parse.y"
     {if(DEBUG) treeNode << "factor(3)" << std::endl; (yyval.factor) = new NFactor(2, (*(yyvsp[0].string))=="abs"?0:(*(yyvsp[0].string))=="chr"?1:(*(yyvsp[0].string))=="odd"?2:(*(yyvsp[0].string))=="ord"?3:(*(yyvsp[0].string))=="pred"?4:(*(yyvsp[0].string))=="sqr"?5:(*(yyvsp[0].string))=="sqrt"?6:7); }
 #line 2243 "parser.cpp"
     break;
 
   case 118:
-#line 311 "parse.y"
+#line 313 "parse.y"
     {if(DEBUG) treeNode << "factor(4)" << std::endl; (yyval.factor) = new NFactor(3, (*(yyvsp[-3].string))=="abs"?0:(*(yyvsp[-3].string))=="chr"?1:(*(yyvsp[-3].string))=="odd"?2:(*(yyvsp[-3].string))=="ord"?3:(*(yyvsp[-3].string))=="pred"?4:(*(yyvsp[-3].string))=="sqr"?5:(*(yyvsp[-3].string))=="sqrt"?6:7, (yyvsp[-1].argsList)); }
 #line 2249 "parser.cpp"
     break;
 
   case 119:
-#line 312 "parse.y"
+#line 314 "parse.y"
     {if(DEBUG) treeNode << "factor(5)" << std::endl; (yyval.factor) = new NFactor(4, (yyvsp[0].constValue)); }
 #line 2255 "parser.cpp"
     break;
 
   case 120:
-#line 313 "parse.y"
+#line 315 "parse.y"
     {if(DEBUG) treeNode << "factor(6)" << std::endl; (yyval.factor) = new NFactor(5, (yyvsp[-1].expression)); }
 #line 2261 "parser.cpp"
     break;
 
   case 121:
-#line 314 "parse.y"
+#line 316 "parse.y"
     {if(DEBUG) treeNode << "factor(7)" << std::endl; (yyval.factor) = new NFactor(6, (yyvsp[0].factor)); }
 #line 2267 "parser.cpp"
     break;
 
   case 122:
-#line 315 "parse.y"
+#line 317 "parse.y"
     {if(DEBUG) treeNode << "factor(8)" << std::endl; (yyval.factor) = new NFactor(7, (yyvsp[0].factor)); }
 #line 2273 "parser.cpp"
     break;
 
   case 123:
-#line 316 "parse.y"
+#line 318 "parse.y"
     {if(DEBUG) treeNode << "factor(9)" << std::endl; (yyval.factor) = new NFactor(8, *(yyvsp[-3].string), (yyvsp[-1].expression)); }
 #line 2279 "parser.cpp"
     break;
 
   case 124:
-#line 317 "parse.y"
+#line 319 "parse.y"
     {if(DEBUG) treeNode << "factor(10)" << std::endl; (yyval.factor) = new NFactor(9, *(yyvsp[-2].string), *(yyvsp[0].string)); }
 #line 2285 "parser.cpp"
     break;
 
   case 125:
-#line 319 "parse.y"
+#line 321 "parse.y"
     {if(DEBUG) treeNode << "args_list(1)" << std::endl; (yyvsp[-2].argsList)->expressions.push_back((yyvsp[0].expression)); }
 #line 2291 "parser.cpp"
     break;
 
   case 126:
-#line 320 "parse.y"
+#line 322 "parse.y"
     {if(DEBUG) treeNode << "args_list(2)" << std::endl; (yyval.argsList) = new NArgsList(); (yyval.argsList)->expressions.push_back((yyvsp[0].expression)); }
 #line 2297 "parser.cpp"
     break;
@@ -2529,4 +2529,4 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 322 "parse.y"
+#line 324 "parse.y"
